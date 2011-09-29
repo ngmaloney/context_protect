@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * Implements hook_init()
+ */
+function context_protect_init() {
+  if ($plugin = context_get_plugin('reaction', 'context_protect')) {
+    $plugin->execute($region);
+  }
+}
+
+
+/**
+ * Implements context_hook_context_plugins
+ */
+function context_protect_context_plugins() {
+  $plugins = array();
+  $plugins['context_protect'] = array(
+    'handler' => array(
+      'path' => drupal_get_path('module', 'context_protect') . '/plugins',
+      'file' => 'context_protect.inc',
+      'class' => 'context_protect',
+      'parent' => 'context_reaction',
+    ),
+  );
+  return $plugins;
+}
+
+/**
+ * Implementation of hook_context_registry().
+ */
+function context_protect_context_registry() {
+  return array(
+    'reactions' => array(
+      'context_protect' => array(
+        'title' => t('Password Protect'),
+        'description' => t('Password protects a context.'),
+        'plugin' => 'context_protect',
+      ),
+    ),
+  );
+}
+
+/**
+ * Notify CTools that we'll be using the plugin API with Context module
+ */
+function context_protect_ctools_plugin_api($module, $api) {
+  if ($module == 'context' && $api == 'plugins') {
+    return array('version' => 3);
+  }
+}
